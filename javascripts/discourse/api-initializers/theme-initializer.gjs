@@ -133,13 +133,13 @@ async function openImageToCheckIMEI() {
     preConfirm: async () => {
       try {
         if (!navigator.clipboard || !navigator.clipboard.read) {
-          throw new Error("Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
+          throw new Error("Trình duyệt không hỗ trợ truy cập bộ nhớ tạm.");
         }
         Swal.showLoading();
         const clipboardItems = await navigator.clipboard.read();
         for (const clipboardItem of clipboardItems) {
           if (!clipboardItem.types.find((type) => type.startsWith("image/"))) {
-            throw new Error("Không có hình ảnh nào trong clipboard.");
+            throw new Error("Không có hình ảnh nào trong bộ nhớ tạm.");
           }
         }
         Swal.showValidationMessage("Đang lấy ảnh từ bộ nhớ tạm");
