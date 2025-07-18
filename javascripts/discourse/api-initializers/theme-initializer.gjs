@@ -4,15 +4,21 @@ const preloadedDataString = document.getElementById("data-preloaded").getAttribu
 const preloadedData = JSON.parse(preloadedDataString);
 console.log({ preloadedData });
 
-function showLoading() {
-  Swal.fire({
-    title: "Đang tải...",
-    text: "Đang chờ quá trình hoàn tất.",
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+export class SwalLoading {
+  static show() {
+    Swal.fire({
+      title: "Đang tải...",
+      text: "Đang chờ quá trình hoàn tất.",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  static close() {
+    Swal.close();
+  }
 }
 
 async function showMessage(title, message) {
@@ -39,7 +45,7 @@ async function btnClickHandle() {
 
     await port.open({ baudRate: 9600 });
 
-    showLoading();
+    SwalLoading.show();
 
     // Gửi dữ liệu đến thiết bị
     writer = port.writable.getWriter();
@@ -72,6 +78,8 @@ async function btnClickHandle() {
   } catch (err) {
     console.log(err.message);
   }
+
+  SwalLoading.close();
 
   // Đảm bảo rằng cổng COM được đóng sau khi hoàn tất giao tiếp
   if (reader) reader.releaseLock(); // Giải phóng lock của reader
@@ -137,6 +145,7 @@ async function openImageToCheckIMEI() {
 
         try {
           Swal.showLoading();
+
           const resizedBlob = await resizeImage(blobOrFile, 800, 800);
           const base64 = await blobToBase64(resizedBlob);
           const imageBase64 = base64.split(",")[1];
@@ -236,7 +245,7 @@ async function showStep1() {
 async function checkKnoxSendPayload(payload) {
   try {
     //
-    showLoading();
+    SwalLoading.show();
 
     if (!preloadedData.currentUser) {
       return document.querySelector(".login-button").click();
@@ -252,6 +261,8 @@ async function checkKnoxSendPayload(payload) {
     const { post_url, error, message } = await response.json();
 
     if (post_url) window.location.href = post_url;
+
+    SwalLoading.close();
 
     if (error) {
       await showMessage(error, message);
