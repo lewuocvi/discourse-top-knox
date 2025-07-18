@@ -5,16 +5,14 @@ const preloadedData = JSON.parse(preloadedDataString);
 console.log({ preloadedData });
 
 function showLoading() {
-  if (!swal.isVisible()) {
-    Swal.fire({
-      title: "Đang tải...",
-      text: "Đang chờ quá trình hoàn tất.",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  }
+  Swal.fire({
+    title: "Đang tải...",
+    text: "Đang chờ quá trình hoàn tất.",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 }
 
 async function showMessage(title, message) {
