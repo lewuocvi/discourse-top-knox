@@ -135,7 +135,6 @@ async function openImageToCheckIMEI() {
     },
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
-    showLoaderOnConfirm: true,
     preConfirm: async (file) => {
       try {
         console.log({ file });
@@ -148,9 +147,9 @@ async function openImageToCheckIMEI() {
             throw new Error("Không có hình ảnh nào trong clipboard.");
           }
         }
-        return "Đang lấy ảnh từ clipboard và đang xử lý...";
+        Swal.showValidationMessage("Đang lấy ảnh từ clipboard và đang xử lý...");
       } catch (err) {
-        return err.message;
+        Swal.showValidationMessage(err.message);
       }
     },
     didOpen: () => {
