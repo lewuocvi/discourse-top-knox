@@ -141,6 +141,7 @@ async function readClipboardImage() {
       }
     }
   } catch (err) {
+    console.log(err);
     return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
   }
 }
