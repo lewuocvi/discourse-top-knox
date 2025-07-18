@@ -4,8 +4,8 @@ const preloadedDataString = document.getElementById("data-preloaded").getAttribu
 const preloadedData = JSON.parse(preloadedDataString);
 console.log({ preloadedData });
 
-function showLoading(isLoading) {
-  if (isLoading) {
+function showLoading() {
+  if (!swal.isVisible()) {
     Swal.fire({
       title: "Đang tải...",
       text: "Đang chờ quá trình hoàn tất.",
@@ -14,8 +14,6 @@ function showLoading(isLoading) {
         Swal.showLoading();
       },
     });
-  } else {
-    Swal.close();
   }
 }
 
@@ -43,7 +41,7 @@ async function btnClickHandle() {
 
     await port.open({ baudRate: 9600 });
 
-    showLoading(true);
+    showLoading();
 
     // Gửi dữ liệu đến thiết bị
     writer = port.writable.getWriter();
@@ -76,8 +74,6 @@ async function btnClickHandle() {
   } catch (err) {
     console.log(err.message);
   }
-
-  showLoading(false);
 
   // Đảm bảo rằng cổng COM được đóng sau khi hoàn tất giao tiếp
   if (reader) reader.releaseLock(); // Giải phóng lock của reader
@@ -133,7 +129,7 @@ async function openImageToCheckIMEI() {
     if (!blobOrFile) return;
 
     try {
-      showLoading(true);
+      showLoading();
 
       const resizedBlob = await resizeImage(blobOrFile, 800, 800);
       const base64 = await blobToBase64(resizedBlob);
@@ -159,8 +155,6 @@ async function openImageToCheckIMEI() {
     } catch (error) {
       Swal.showValidationMessage("Lỗi: " + error.message);
     }
-
-    showLoading(false);
   };
 
   const handleFileInputChange = (e) => {
@@ -246,7 +240,7 @@ async function showStep1() {
 async function checkKnoxSendPayload(payload) {
   try {
     //
-    showLoading(true);
+    showLoading();
 
     if (!preloadedData.currentUser) {
       return document.querySelector(".login-button").click();
@@ -271,8 +265,6 @@ async function checkKnoxSendPayload(payload) {
   } catch (error) {
     return await showMessage("Error during API call", error.message);
   }
-
-  showLoading(false);
 }
 
 export default apiInitializer((api) => {
