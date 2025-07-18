@@ -139,6 +139,7 @@ async function openImageToCheckIMEI() {
         const clipboardItems = await navigator.clipboard.read();
         for (const clipboardItem of clipboardItems) {
           if (!clipboardItem.types.find((type) => type.startsWith("image/"))) {
+            swal.hideLoading();
             throw new Error("Không có hình ảnh nào trong bộ nhớ tạm.");
           }
         }
@@ -146,7 +147,6 @@ async function openImageToCheckIMEI() {
       } catch (err) {
         Swal.showValidationMessage(err.message);
       }
-      swal.hideLoading();
     },
     didOpen: () => {
       const blobToBase64 = (blob) => {
