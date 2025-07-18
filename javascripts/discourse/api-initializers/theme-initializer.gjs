@@ -120,6 +120,62 @@ async function resizeImage(blob, maxWidth, maxHeight) {
 }
 
 async function openImageToCheckIMEI() {
+  // Xử lý ảnh từ base64
+
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  const handleImage = async (blobOrFile) => {
+    if (!blobOrFile) return;
+
+    try {
+      Swal.showLoading();
+
+      // Resize the image before converting to base64
+      const resizedBlob = await resizeImage(blobOrFile, 800, 800); // Set desired max width and height
+      const base64 = await blobToBase64(resizedBlob);
+      console.log("Base64 Image:", base64);
+      const imageBase64 = base64.split(",")[1]; // nếu API không cần prefix
+      const response = await fetch("https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageBase64 }),
+      });
+
+      if (!response.ok) throw new Error("Gửi ảnh thất bại");
+
+      const { TextDetections } = await response.json();
+      const lines = TextDetections.filter(({ Type }) => Type === "LINE").map(({ DetectedText }) => DetectedText);
+      const match = lines.join(" ").match(/\b\d{15}\b/);
+
+      if (!match) throw new Error("Không tìm thấy IMEI hợp lệ");
+
+      const imei = match[0];
+
+      console.log("IMEI tìm được:", imei);
+
+      return await checkKnoxSendPayload({ imei });
+    } catch (error) {
+      Swal.hideLoading();
+      Swal.showValidationMessage("Lỗi: " + error.message);
+    }
+  };
+
+  const pasteHandle = async () => {
+    const items = e.clipboardData.items;
+    for (let item of items) {
+      if (item.type.startsWith("image/")) {
+        return await handleImage(item.getAsFile());
+      }
+    }
+  };
+
   await Swal.fire({
     title: "Tải ảnh để kiểm tra IMEI",
     html: `
@@ -129,53 +185,6 @@ async function openImageToCheckIMEI() {
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
     didOpen: async () => {
-      // Chuyển blob/file thành base64
-      const blobToBase64 = (blob) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      };
-
-      // Xử lý ảnh từ base64
-      const handleImage = async (blobOrFile) => {
-        if (!blobOrFile) return;
-
-        try {
-          Swal.showLoading();
-
-          // Resize the image before converting to base64
-          const resizedBlob = await resizeImage(blobOrFile, 800, 800); // Set desired max width and height
-          const base64 = await blobToBase64(resizedBlob);
-          console.log("Base64 Image:", base64);
-          const imageBase64 = base64.split(",")[1]; // nếu API không cần prefix
-          const response = await fetch("https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image: imageBase64 }),
-          });
-
-          if (!response.ok) throw new Error("Gửi ảnh thất bại");
-
-          const { TextDetections } = await response.json();
-          const lines = TextDetections.filter(({ Type }) => Type === "LINE").map(({ DetectedText }) => DetectedText);
-          const match = lines.join(" ").match(/\b\d{15}\b/);
-
-          if (!match) throw new Error("Không tìm thấy IMEI hợp lệ");
-
-          const imei = match[0];
-
-          console.log("IMEI tìm được:", imei);
-
-          return await checkKnoxSendPayload({ imei });
-        } catch (error) {
-          Swal.hideLoading();
-          Swal.showValidationMessage("Lỗi: " + error.message);
-        }
-      };
-
       document.getElementById("swal-image").addEventListener("change", (e) => {
         const file = e.target.files[0];
         handleImage(file);
@@ -189,7 +198,7 @@ async function openImageToCheckIMEI() {
           }
 
           const items = await navigator.clipboard.read();
-
+          console.log({items});
           for (const item of items) {
             if (item.type.startsWith("image/")) {
               handleImage(item.getAsFile());
@@ -202,23 +211,13 @@ async function openImageToCheckIMEI() {
         }
       });
 
-      document.addEventListener(
-        "paste",
-        (e) => {
-          const items = e.clipboardData.items;
-          for (let item of items) {
-            if (item.type.startsWith("image/")) {
-              handleImage(item.getAsFile());
-              break;
-            }
-          }
-        },
-        { once: true }
-      );
+      document.addEventListener("paste", pasteHandle);
     },
   });
 
   console.log("OK");
+
+  document.removeEventListener("paste", pasteHandle);
 }
 
 async function showStep1() {
