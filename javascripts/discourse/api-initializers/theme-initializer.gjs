@@ -126,8 +126,7 @@ async function openImageToCheckIMEI() {
       <p style="margin-top:10px; font-size:0.9em;">Bạn cũng có thể dán hình ảnh (Ctrl + V)</p>
     `,
     showConfirmButton: false,
-    showCancelButton: true,
-    cancelButtonText: "Đóng",
+    showCloseButton: true,
     didOpen: () => {
       const fileInput = document.getElementById("swal-image");
 
