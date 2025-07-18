@@ -131,7 +131,20 @@ async function openImageToCheckIMEI() {
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
     preConfirm: async () => {
-      //
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.read) {
+          throw new Error("Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
+        }
+        const clipboardItems = await navigator.clipboard.read();
+        for (const clipboardItem of clipboardItems) {
+          if (!clipboardItem.types.find((type) => type.startsWith("image/"))) {
+            throw new Error("Không có hình ảnh nào trong clipboard.");
+          }
+        }
+        return "Đang lấy ảnh từ clipboard và đang xử lý...";
+      } catch (err) {
+        return err.message;
+      }
     },
     didOpen: () => {
       const blobToBase64 = (blob) => {
