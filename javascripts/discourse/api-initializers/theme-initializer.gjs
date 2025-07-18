@@ -86,6 +86,38 @@ async function btnClickHandle() {
   }
 }
 
+async function resizeImage(blob, maxWidth, maxHeight) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(resolve, "image/jpeg", 0.7); // Adjust quality as needed
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(blob);
+  });
+}
+
 async function openImageToCheckIMEI() {
   await Swal.fire({
     title: "Tải ảnh để kiểm tra IMEI",
@@ -116,7 +148,9 @@ async function openImageToCheckIMEI() {
         try {
           Swal.showLoading();
 
-          const base64 = await blobToBase64(blobOrFile);
+          // Resize the image before converting to base64
+          const resizedBlob = await resizeImage(blobOrFile, 800, 800); // Set desired max width and height
+          const base64 = await blobToBase64(resizedBlob);
           const imageBase64 = base64.split(",")[1]; // nếu API không cần prefix
 
           const response = await fetch("https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track", {
