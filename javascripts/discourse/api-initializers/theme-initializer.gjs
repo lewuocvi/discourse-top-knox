@@ -274,11 +274,11 @@ async function checkKnoxSendPayload(payload) {
 
     const response = await fetch(url, { method: "POST", headers: fetchHeaders, body: JSON.stringify({ ...payload, user }) });
 
+    SwalLoading.close();
+
     const { post_url, error, message } = await response.json();
 
     if (post_url) window.location.href = post_url;
-
-    SwalLoading.close();
 
     if (error) {
       await showMessage(error, message);
