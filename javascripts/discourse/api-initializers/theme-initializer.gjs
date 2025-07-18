@@ -197,12 +197,11 @@ async function openImageToCheckIMEI() {
             return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
           }
 
-          const items = await navigator.clipboard.read();
-          console.log({items});
-          for (const item of items) {
-            if (item.type.startsWith("image/")) {
-              handleImage(item.getAsFile());
-              break;
+          const [{ types }] = await navigator.clipboard.read();
+          console.log({ types });
+          for (const item of types) {
+            if (item.startsWith("image/")) {
+              return await handleImage(item.getAsFile());
             }
           }
         } catch (err) {
