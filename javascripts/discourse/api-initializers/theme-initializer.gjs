@@ -160,7 +160,7 @@ async function openImageToCheckIMEI() {
 
       const swal2Confirm = document.querySelector(".swal2-confirm");
       if (swal2Confirm) {
-        await readClipboardImage();
+        swal2Confirm.addEventListener("click", readClipboardImage);
       }
 
       // Chuyển blob/file thành base64
