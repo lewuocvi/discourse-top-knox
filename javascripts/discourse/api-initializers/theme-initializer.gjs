@@ -130,6 +130,7 @@ async function openImageToCheckIMEI() {
     `,
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
+    showLoaderOnConfirm: true,
     preConfirm: async () => {
       try {
         if (!navigator.clipboard || !navigator.clipboard.read) {
