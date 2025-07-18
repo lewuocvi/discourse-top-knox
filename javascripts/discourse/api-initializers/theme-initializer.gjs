@@ -119,33 +119,6 @@ async function resizeImage(blob, maxWidth, maxHeight) {
   });
 }
 
-async function readClipboardImage() {
-  try {
-    // Kiểm tra có hỗ trợ không
-    if (!navigator.clipboard || !navigator.clipboard.read) {
-      return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
-    }
-
-    const items = await navigator.clipboard.read();
-
-    for (const item of items) {
-      for (const type of item.types) {
-        if (type.startsWith("image/")) {
-          const blob = await item.getType(type);
-          const url = URL.createObjectURL(blob);
-          document.getElementById("preview").src = url;
-
-          console.log("Ảnh từ clipboard:", blob);
-          return;
-        }
-      }
-    }
-  } catch (err) {
-    console.log(err);
-    return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
-  }
-}
-
 async function openImageToCheckIMEI() {
   await Swal.fire({
     title: "Tải ảnh để kiểm tra IMEI",
@@ -156,13 +129,6 @@ async function openImageToCheckIMEI() {
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
     didOpen: async () => {
-      const fileInput = document.getElementById("swal-image");
-
-      const swal2Confirm = document.querySelector(".swal2-confirm");
-      if (swal2Confirm) {
-        swal2Confirm.addEventListener("click", readClipboardImage);
-      }
-
       // Chuyển blob/file thành base64
       const blobToBase64 = (blob) => {
         return new Promise((resolve, reject) => {
@@ -210,21 +176,39 @@ async function openImageToCheckIMEI() {
         }
       };
 
-      // Khi chọn file từ input
-      fileInput.addEventListener("change", (e) => {
+      document.getElementById("swal-image").addEventListener("change", (e) => {
         const file = e.target.files[0];
         handleImage(file);
       });
 
-      // Khi dán ảnh từ clipboard
+      document.querySelector(".swal2-confirm").addEventListener("click", async () => {
+        try {
+          // Kiểm tra có hỗ trợ không
+          if (!navigator.clipboard || !navigator.clipboard.read) {
+            return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
+          }
+
+          const items = await navigator.clipboard.read();
+
+          for (const item of items) {
+            if (item.type.startsWith("image/")) {
+              handleImage(item.getAsFile());
+              break;
+            }
+          }
+        } catch (err) {
+          console.log(err);
+          return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
+        }
+      });
+
       document.addEventListener(
         "paste",
         (e) => {
           const items = e.clipboardData.items;
           for (let item of items) {
             if (item.type.startsWith("image/")) {
-              const blob = item.getAsFile();
-              handleImage(blob);
+              handleImage(item.getAsFile());
               break;
             }
           }
@@ -233,6 +217,8 @@ async function openImageToCheckIMEI() {
       );
     },
   });
+
+  console.log("OK");
 }
 
 async function showStep1() {
