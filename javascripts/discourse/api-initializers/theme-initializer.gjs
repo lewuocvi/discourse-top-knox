@@ -120,8 +120,6 @@ async function resizeImage(blob, maxWidth, maxHeight) {
 }
 
 async function openImageToCheckIMEI() {
-  // Xử lý ảnh từ base64
-
   const blobToBase64 = (blob) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -135,13 +133,11 @@ async function openImageToCheckIMEI() {
     if (!blobOrFile) return;
 
     try {
-      Swal.showLoading();
+      showLoading(true);
 
-      // Resize the image before converting to base64
-      const resizedBlob = await resizeImage(blobOrFile, 800, 800); // Set desired max width and height
+      const resizedBlob = await resizeImage(blobOrFile, 800, 800);
       const base64 = await blobToBase64(resizedBlob);
-      console.log("Base64 Image:", base64);
-      const imageBase64 = base64.split(",")[1]; // nếu API không cần prefix
+      const imageBase64 = base64.split(",")[1];
       const response = await fetch("https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -157,17 +153,43 @@ async function openImageToCheckIMEI() {
       if (!match) throw new Error("Không tìm thấy IMEI hợp lệ");
 
       const imei = match[0];
-
       console.log("IMEI tìm được:", imei);
 
-      return await checkKnoxSendPayload({ imei });
+      await checkKnoxSendPayload({ imei });
     } catch (error) {
-      Swal.hideLoading();
       Swal.showValidationMessage("Lỗi: " + error.message);
+    }
+
+    showLoading(false);
+  };
+
+  const handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    handleImage(file);
+  };
+
+  const handleClipboardPaste = async () => {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.read) {
+        return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
+      }
+
+      const clipboardItems = await navigator.clipboard.read();
+      for (const clipboardItem of clipboardItems) {
+        for (const type of clipboardItem.types) {
+          if (type.startsWith("image/")) {
+            const blob = await clipboardItem.getType(type);
+            return await handleImage(blob);
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
     }
   };
 
-  const pasteHandle = async () => {
+  const pasteHandle = async (e) => {
     const items = e.clipboardData.items;
     for (let item of items) {
       if (item.type.startsWith("image/")) {
@@ -184,41 +206,16 @@ async function openImageToCheckIMEI() {
     `,
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
-    didOpen: async () => {
-      document.getElementById("swal-image").addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        handleImage(file);
-      });
-
-      document.querySelector(".swal2-confirm").addEventListener("click", async () => {
-        try {
-          // Kiểm tra có hỗ trợ không
-          if (!navigator.clipboard || !navigator.clipboard.read) {
-            return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
-          }
-
-          const clipboardItems = await navigator.clipboard.read();
-          for (const clipboardItem of clipboardItems) {
-            for (const type of clipboardItem.types) {
-              if (type.startsWith("image/")) {
-                const blob = await clipboardItem.getType(type);
-                return await handleImage(blob);
-              }
-            }
-          }
-        } catch (err) {
-          console.log(err);
-          return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
-        }
-      });
-
+    didOpen: () => {
+      document.getElementById("swal-image").addEventListener("change", handleFileInputChange);
+      document.querySelector(".swal2-confirm").addEventListener("click", handleClipboardPaste);
       document.addEventListener("paste", pasteHandle);
     },
+    willClose: () => {
+      document.removeEventListener("paste", pasteHandle);
+      console.log("OK");
+    },
   });
-
-  console.log("OK");
-
-  document.removeEventListener("paste", pasteHandle);
 }
 
 async function showStep1() {
