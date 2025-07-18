@@ -135,6 +135,7 @@ async function openImageToCheckIMEI() {
         if (!navigator.clipboard || !navigator.clipboard.read) {
           throw new Error("Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
         }
+        Swal.showLoading();
         const clipboardItems = await navigator.clipboard.read();
         for (const clipboardItem of clipboardItems) {
           if (!clipboardItem.types.find((type) => type.startsWith("image/"))) {
@@ -145,6 +146,7 @@ async function openImageToCheckIMEI() {
       } catch (err) {
         Swal.showValidationMessage(err.message);
       }
+      swal.hideLoading();
     },
     didOpen: () => {
       const blobToBase64 = (blob) => {
