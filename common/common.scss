@@ -1,0 +1,124 @@
+/* CSS gốc cho máy tính */
+.knox-checker {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  /* Điều chỉnh để phù hợp với thiết bị di động */
+  padding: 15px;
+  /* Giảm padding cho thiết bị di động */
+}
+
+.knox-box {
+  padding: 20px;
+  width: 100%;
+}
+
+.knox-box h1 {
+  color: #1a202c;
+  margin-bottom: 8px;
+  /* Giảm margin */
+  text-align: center;
+}
+
+.knox-box p {
+  color: #4a5568;
+  margin-bottom: 16px;
+  /* Giảm margin dưới */
+  text-align: center;
+}
+
+.knox-input-group {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  /* Để các input nhóm nằm theo chiều dọc */
+}
+
+.knox-input-group input[type="input"] {
+  width: 100%;
+  /* Đảm bảo ô input chiếm toàn bộ chiều rộng */
+  padding: 10px 12px;
+  /* Điều chỉnh padding */
+  font-size: 14px;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+  margin-bottom: 12px;
+  /* Giảm margin */
+  box-sizing: border-box;
+}
+
+.knox-btn-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  /* Giảm chiều cao nút */
+}
+
+.knox-btn {
+  padding: 10px 16px;
+  /* Giảm padding của nút */
+  margin: 5px;
+  background-color: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  /* Giảm kích thước chữ */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* Giảm khoảng cách giữa các phần tử trong nút */
+}
+
+.knox-btn:hover {
+  background-color: #2b6cb0;
+}
+
+.knox-btn .fa-usb {
+  font-size: 14px;
+  /* Điều chỉnh kích thước icon */
+}
+
+/* CSS cho màn hình có chiều rộng nhỏ hơn hoặc bằng 1024px */
+@media (max-width: 1024px) {
+  .knox-box {
+    padding: 15px;
+    /* Giảm padding */
+  }
+
+  .knox-btn {
+    padding: 8px 14px;
+    /* Giảm padding của nút */
+  }
+
+  .knox-input-group input[type="input"] {
+    padding: 8px 10px;
+    /* Điều chỉnh padding */
+    font-size: 13px;
+    /* Giảm font-size */
+  }
+
+  .knox-box h1 {
+    font-size: 14px;
+    /* Giảm font-size cho h1 */
+  }
+
+  .knox-box p {
+    font-size: 12px;
+    /* Giảm font-size cho p */
+  }
+}
+
+/* CSS cho màn hình có chiều rộng nhỏ hơn hoặc bằng 720px */
+@media (max-width: 720px) {
+  .knox-btn-com-port {
+    display: none;
+  }
+}
