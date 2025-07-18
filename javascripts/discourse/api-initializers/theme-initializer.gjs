@@ -185,6 +185,8 @@ async function openImageToCheckIMEI() {
             return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
           }
 
+          Swal.showLoading();
+
           const clipboardItems = await navigator.clipboard.read();
           for (const clipboardItem of clipboardItems) {
             for (const type of clipboardItem.types) {
@@ -198,6 +200,8 @@ async function openImageToCheckIMEI() {
           console.log(err);
           return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
         }
+
+        swal.hideLoading();
       };
 
       const pasteHandle = async (e) => {
