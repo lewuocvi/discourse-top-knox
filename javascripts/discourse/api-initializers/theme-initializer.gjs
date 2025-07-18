@@ -142,7 +142,7 @@ async function openImageToCheckIMEI() {
             throw new Error("Không có hình ảnh nào trong clipboard.");
           }
         }
-        Swal.showValidationMessage("Đang lấy ảnh từ clipboard và đang xử lý...");
+        Swal.showValidationMessage("Đang lấy ảnh từ bộ nhớ tạm");
       } catch (err) {
         Swal.showValidationMessage(err.message);
       }
