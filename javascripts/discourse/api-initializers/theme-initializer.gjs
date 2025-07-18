@@ -130,6 +130,9 @@ async function openImageToCheckIMEI() {
     `,
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
+    preConfirm: async () => {
+      //
+    },
     didOpen: () => {
       const blobToBase64 = (blob) => {
         return new Promise((resolve, reject) => {
