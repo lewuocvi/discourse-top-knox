@@ -74,7 +74,7 @@ async function btnClickHandle() {
       }
     }
   } catch (err) {
-    await showMessage("", err.message);
+    console.log(err.message);
   }
 
   showLoading(false);
@@ -171,7 +171,7 @@ async function openImageToCheckIMEI() {
 
           console.log("IMEI tìm được:", imei);
 
-          await checkKnoxSendPayload({ imei });
+          return await checkKnoxSendPayload({ imei });
         } catch (error) {
           Swal.hideLoading();
           Swal.showValidationMessage("Lỗi: " + error.message);
@@ -245,8 +245,6 @@ async function checkKnoxSendPayload(payload) {
     const response = await fetch(url, { method: "POST", headers: fetchHeaders, body: JSON.stringify({ ...payload, user }) });
 
     const { post_url, error, message } = await response.json();
-
-    showLoading(false);
 
     if (post_url) window.location.href = post_url;
 
