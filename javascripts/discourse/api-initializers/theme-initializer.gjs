@@ -124,20 +124,14 @@ async function resizeImage(blob, maxWidth, maxHeight) {
 async function openImageToCheckIMEI() {
   await Swal.fire({
     title: "Tải ảnh để kiểm tra IMEI",
-    // html: `
-    //   <input id="swal-image" type="file" class="swal2-file" accept="image/*">
-    //   <p style="margin-top:10px; font-size:0.9em;">Bạn cũng có thể dán hình ảnh (Ctrl + V)</p>
-    // `,
-    input: "file",
-    inputAttributes: {
-      "accept": "image/*",
-      "aria-label": "Bạn cũng có thể dán hình ảnh (Ctrl + V)",
-    },
+    html: `
+      <input id="swal-image" type="file" class="swal2-file" accept="image/*">
+      <p style="margin-top:10px; font-size:0.9em;">Bạn cũng có thể dán hình ảnh (Ctrl + V)</p>
+    `,
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
-    preConfirm: async (file) => {
+    preConfirm: async () => {
       try {
-        console.log({ file });
         if (!navigator.clipboard || !navigator.clipboard.read) {
           throw new Error("Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
         }
