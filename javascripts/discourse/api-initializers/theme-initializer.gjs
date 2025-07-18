@@ -118,14 +118,6 @@ async function resizeImage(blob, maxWidth, maxHeight) {
   });
 }
 
-async function computeImageHash(blob) {
-  const arrayBuffer = await blob.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hashHex;
-}
-
 async function openImageToCheckIMEI() {
   await Swal.fire({
     title: "Tải ảnh để kiểm tra IMEI",
@@ -160,15 +152,11 @@ async function openImageToCheckIMEI() {
           const resizedBlob = await resizeImage(blobOrFile, 800, 800); // Set desired max width and height
           const base64 = await blobToBase64(resizedBlob);
           console.log("Base64 Image:", base64);
-          // Compute image hash
-          const imageHash = await computeImageHash(resizedBlob);
-          console.log("Image Hash:", imageHash);
           const imageBase64 = base64.split(",")[1]; // nếu API không cần prefix
-
           const response = await fetch("https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image: imageBase64, hash: imageHash }),
+            body: JSON.stringify({ image: imageBase64 }),
           });
 
           if (!response.ok) throw new Error("Gửi ảnh thất bại");
