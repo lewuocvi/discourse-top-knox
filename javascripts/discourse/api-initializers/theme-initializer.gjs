@@ -119,6 +119,32 @@ async function resizeImage(blob, maxWidth, maxHeight) {
   });
 }
 
+async function readClipboardImage() {
+  try {
+    // Kiểm tra có hỗ trợ không
+    if (!navigator.clipboard || !navigator.clipboard.read) {
+      return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
+    }
+
+    const items = await navigator.clipboard.read();
+
+    for (const item of items) {
+      for (const type of item.types) {
+        if (type.startsWith("image/")) {
+          const blob = await item.getType(type);
+          const url = URL.createObjectURL(blob);
+          document.getElementById("preview").src = url;
+
+          console.log("Ảnh từ clipboard:", blob);
+          return;
+        }
+      }
+    }
+  } catch (err) {
+    return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
+  }
+}
+
 async function openImageToCheckIMEI() {
   await Swal.fire({
     title: "Tải ảnh để kiểm tra IMEI",
@@ -126,7 +152,7 @@ async function openImageToCheckIMEI() {
       <input id="swal-image" type="file" class="swal2-file" accept="image/*">
       <p style="margin-top:10px; font-size:0.9em;">Bạn cũng có thể dán hình ảnh (Ctrl + V)</p>
     `,
-    showConfirmButton: false,
+    confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
     didOpen: () => {
       const fileInput = document.getElementById("swal-image");
