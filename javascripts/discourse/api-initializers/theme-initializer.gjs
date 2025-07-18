@@ -154,8 +154,13 @@ async function openImageToCheckIMEI() {
     `,
     confirmButtonText: "Dán từ bộ nhớ tạm",
     showCloseButton: true,
-    didOpen: () => {
+    didOpen: async () => {
       const fileInput = document.getElementById("swal-image");
+
+      const swal2Confirm = document.querySelector(".swal2-confirm");
+      if (swal2Confirm) {
+        await readClipboardImage();
+      }
 
       // Chuyển blob/file thành base64
       const blobToBase64 = (blob) => {
