@@ -182,33 +182,29 @@ async function openImageToCheckIMEI() {
       const handleClipboardPaste = async () => {
         try {
           if (!navigator.clipboard || !navigator.clipboard.read) {
-            return await showMessage("", "Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
+            throw new Error("Trình duyệt không hỗ trợ truy cập clipboard hình ảnh.");
           }
-
-          Swal.showLoading();
-
           const clipboardItems = await navigator.clipboard.read();
           for (const clipboardItem of clipboardItems) {
             for (const type of clipboardItem.types) {
               if (type.startsWith("image/")) {
                 const blob = await clipboardItem.getType(type);
-                return await handleImage(blob);
+                await handleImage(blob);
+                break;
               }
             }
           }
         } catch (err) {
-          console.log(err);
-          return await showMessage("", "Không thể truy cập clipboard. Hãy đảm bảo bạn đã sao chép một ảnh và trình duyệt cho phép.");
+          await showMessage("read clipboard error", err.message);
         }
-
-        swal.hideLoading();
       };
 
       const pasteHandle = async (e) => {
         const items = e.clipboardData.items;
         for (let item of items) {
           if (item.type.startsWith("image/")) {
-            return await handleImage(item.getAsFile());
+            await handleImage(item.getAsFile());
+            break;
           }
         }
       };
