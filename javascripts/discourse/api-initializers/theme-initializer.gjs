@@ -2,6 +2,7 @@ import { apiInitializer } from "discourse/lib/api";
 
 const preloadedDataString = document.getElementById("data-preloaded").getAttribute("data-preloaded");
 const preloadedData = JSON.parse(preloadedDataString);
+
 console.log({ preloadedData });
 
 export class SwalLoading {
@@ -246,7 +247,11 @@ async function showStep1() {
     confirmButtonText: "Tra cứu",
     cancelButtonText: "Quay lại",
     inputValidator: (value) => {
-      if (![11, 15].includes(value.length)) {
+      
+      if (!preloadedData.currentUser){
+        return "Chưa đăng nhập tài khoản!";
+      }
+      else if (![11, 15].includes(value.length)) {
         return "IMEI 15 ký tự / SN 11 ký tự";
       }
     },
@@ -265,9 +270,9 @@ async function checkKnoxSendPayload(payload) {
     //
     SwalLoading.show();
 
-    if (!preloadedData.currentUser) {
-      return document.querySelector(".login-button").click();
-    }
+    // if (!preloadedData.currentUser) {
+    //   return document.querySelector(".login-button").click();
+    // }
 
     const user = JSON.parse(preloadedData.currentUser);
 
