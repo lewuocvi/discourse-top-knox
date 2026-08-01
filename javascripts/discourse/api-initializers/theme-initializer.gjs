@@ -281,11 +281,11 @@ async function checkKnoxSendPayload(payload) {
     // if (!preloadedData.currentUser) {
     //   return document.querySelector(".login-button").click();
     // }
-
+    const token = document.head.querySelector('meta[name="jwt-token"]').getAttribute("content");
     const user = JSON.parse(preloadedData.currentUser);
 
     const url = "https://serverforcheckknoxdotcom.checkknoxdotcom.workers.dev/check";
-    const fetchHeaders = { Accept: "application/json, text/javascript, */*; q=0.01", "Content-Type": "application/json" };
+    const fetchHeaders = { Accept: "application/json, text/javascript, */*; q=0.01", "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 
     const response = await fetch(url, { method: "POST", headers: fetchHeaders, body: JSON.stringify({ ...payload, user }) });
 
