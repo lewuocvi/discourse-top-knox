@@ -305,12 +305,12 @@ async function checkKnoxSendPayload(payload) {
   }
 }
 
-const setMetaToken = (token) => {
+const setMetaToken = ({ token }) => {
   let meta = document.head.querySelector('meta[name="knox-token"]');
 
   if (!meta) {
     meta = document.createElement("meta");
-    meta.name = "knox-token";
+    meta.name = "jwt-token";
     document.head.appendChild(meta);
   }
 
@@ -334,9 +334,9 @@ export default apiInitializer(async (api) => {
       body: JSON.stringify({ u: user.username }),
     });
 
-    const jwt = await response.json();
-
-    setMetaToken(jwt);
+    const { data } = await response.json();
+    if (!data) return;
+    setMetaToken(data);
   } catch (error) {
     console.error("Generate JWT failed:", error);
   }
