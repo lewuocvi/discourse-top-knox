@@ -6,15 +6,14 @@ const preloadedData = JSON.parse(preloadedDataString);
 console.log({ preloadedData });
 
 const generateJwt = async () => {
-
   const { user } = preloadedData;
 
-  const response = await fetch("https://checkknox.com/api/generate-jwt", { headers: { "u": user.username ?? "" } })
+  const response = await fetch("https://checkknox.com/api/generate-jwt", { headers: { u: user.username ?? "" } });
 
   const jwt = await response.json();
 
   console.log(jwt);
-}
+};
 
 export class SwalLoading {
   static show() {
@@ -258,11 +257,9 @@ async function showStep1() {
     confirmButtonText: "Tra cứu",
     cancelButtonText: "Quay lại",
     inputValidator: (value) => {
-      
-      if (!preloadedData.currentUser){
+      if (!preloadedData.currentUser) {
         return "Chưa đăng nhập tài khoản!";
-      }
-      else if (![11, 15].includes(value.length)) {
+      } else if (![11, 15].includes(value.length)) {
         return "IMEI 15 ký tự / SN 11 ký tự";
       }
     },
@@ -288,7 +285,7 @@ async function checkKnoxSendPayload(payload) {
     const user = JSON.parse(preloadedData.currentUser);
 
     const url = "https://serverforcheckknoxdotcom.checkknoxdotcom.workers.dev/check";
-    const fetchHeaders = { "Accept": "application/json, text/javascript, */*; q=0.01", "Content-Type": "application/json" };
+    const fetchHeaders = { Accept: "application/json, text/javascript, */*; q=0.01", "Content-Type": "application/json" };
 
     const response = await fetch(url, { method: "POST", headers: fetchHeaders, body: JSON.stringify({ ...payload, user }) });
 
@@ -308,7 +305,41 @@ async function checkKnoxSendPayload(payload) {
   }
 }
 
-export default apiInitializer((api) => {
+const setMetaToken = (token) => {
+  let meta = document.head.querySelector('meta[name="knox-token"]');
+
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "knox-token";
+    document.head.appendChild(meta);
+  }
+
+  meta.content = token;
+};
+
+export default apiInitializer(async (api) => {
+  //
+  const user = api.getCurrentUser();
+
+  if (!user) {
+    return;
+  }
+
+  try {
+    const response = await fetch("https://checkknox.com/api/generate-jwt", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ u: user.username }),
+    });
+
+    const jwt = await response.json();
+
+    setMetaToken(jwt);
+  } catch (error) {
+    console.error("Generate JWT failed:", error);
+  }
   //
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
