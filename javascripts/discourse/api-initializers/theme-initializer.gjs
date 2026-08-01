@@ -287,6 +287,8 @@ async function checkKnoxSendPayload(payload) {
 
     const user = JSON.parse(preloadedData.currentUser);
 
+    await generateJwt();
+
     const url = "https://serverforcheckknoxdotcom.checkknoxdotcom.workers.dev/check";
     const fetchHeaders = { "Accept": "application/json, text/javascript, */*; q=0.01", "Content-Type": "application/json" };
 
