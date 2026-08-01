@@ -5,6 +5,17 @@ const preloadedData = JSON.parse(preloadedDataString);
 
 console.log({ preloadedData });
 
+const generateJwt = async () => {
+
+  const { user } = preloadedData;
+
+  const response = await fetch("https://checkknox.com/api/generate-jwt", { headers: { "u": user.username ?? "" } })
+
+  const jwt = await response.json();
+
+  console.log(jwt);
+}
+
 export class SwalLoading {
   static show() {
     Swal.fire({
