@@ -6,7 +6,7 @@ import { openImageToCheckIMEI } from "../lib/image-imei-scanner";
 import { showStep1 } from "../lib/imei-input-modal";
 
 export default apiInitializer(async (api) => {
-  await generateJwtToken();
+  await generateJwtToken(api);
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {

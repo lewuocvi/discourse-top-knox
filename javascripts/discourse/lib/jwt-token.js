@@ -10,7 +10,7 @@ const setMetaToken = ({ token }) => {
   meta.content = token;
 };
 
-export const generateJwtToken = async () => {
+export const generateJwtToken = async (api) => {
   try {
     const user = api.getCurrentUser();
     if (!user) return;
