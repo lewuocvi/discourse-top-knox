@@ -8,24 +8,23 @@ import { showStep1 } from "../lib/imei-input-modal";
 export default apiInitializer(async (api) => {
   await generateJwtToken(api);
 
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType !== Node.ELEMENT_NODE || !node.classList) return;
-
-        if (node.classList.contains("knox-input")) {
-          node.onclick = showStep1;
-          node.onkeyup = () => {
-            node.value = "";
-          };
-        } else if (node.classList.contains("knox-btn-com-port")) {
-          node.onclick = btnClickHandle;
-        } else if (node.classList.contains("knox-btn-image-text-track")) {
-          node.onclick = openImageToCheckIMEI;
-        }
-      });
-    });
+  document.body.addEventListener("click", (e) => {
+    const target = e.target.closest(
+      ".knox-input, .knox-btn-com-port, .knox-btn-image-text-track"
+    );
+    if (!target) return;
+    if (target.classList.contains("knox-input")) {
+      showStep1();
+    } else if (target.classList.contains("knox-btn-com-port")) {
+      btnClickHandle();
+    } else if (target.classList.contains("knox-btn-image-text-track")) {
+      openImageToCheckIMEI();
+    }
   });
 
-  observer.observe(document.body, { childList: true, subtree: true });
+  document.body.addEventListener("keyup", (e) => {
+    if (e.target.classList && e.target.classList.contains("knox-input")) {
+      e.target.value = "";
+    }
+  });
 });
