@@ -6,10 +6,18 @@ const CHECK_URL =
   "https://serverforcheckknoxdotcom.checkknoxdotcom.workers.dev/check";
 
 export async function checkKnoxSendPayload(payload) {
-  try {
-    SwalLoading.show();
+  SwalLoading.show();
 
-    const token = await generateJwtToken();
+  const token = await generateJwtToken();
+  if (!token) {
+    SwalLoading.close();
+    return await showMessage(
+      "Lỗi xác thực",
+      "Không lấy được JWT token. Vui lòng thử lại!"
+    );
+  }
+
+  try {
     const user = JSON.parse(getPreloadedData().currentUser);
 
     const response = await fetch(CHECK_URL, {
@@ -32,6 +40,7 @@ export async function checkKnoxSendPayload(payload) {
       await showMessage(error, message);
     }
   } catch (error) {
+    SwalLoading.close();
     return await showMessage("Error during API call", error.message);
   }
 }
