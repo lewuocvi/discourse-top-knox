@@ -11,7 +11,7 @@ export async function showStep1() {
     confirmButtonText: "Tra cứu",
     cancelButtonText: "Quay lại",
     inputValidator: (value) => {
-      if (!preloadedData.currentUser) {
+      if (!JSON.parse(preloadedData.currentUser)) {
         return "Chưa đăng nhập tài khoản!";
       } else if (![11, 15].includes(value.length)) {
         return "IMEI 15 ký tự / SN 11 ký tự";
