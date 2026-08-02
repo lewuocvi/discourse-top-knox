@@ -1,7 +1,13 @@
-const preloadedDataString = document
-  .getElementById("data-preloaded")
-  .getAttribute("data-preloaded");
+let preloadedData = null;
 
-const preloadedData = JSON.parse(preloadedDataString);
+export default function getPreloadedData() {
+  if (preloadedData) return preloadedData;
 
-export default preloadedData;
+  const el = document.getElementById("data-preloaded");
+  if (!el) {
+    throw new Error("Khong tim thay #data-preloaded trong DOM");
+  }
+  const raw = el.getAttribute("data-preloaded");
+  preloadedData = JSON.parse(raw);
+  return preloadedData;
+}

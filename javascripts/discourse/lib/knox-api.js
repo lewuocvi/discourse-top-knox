@@ -1,5 +1,5 @@
+import getPreloadedData from "./preloaded-data";
 import { SwalLoading, showMessage } from "./swal-loading";
-import preloadedData from "./preloaded-data";
 
 const CHECK_URL =
   "https://serverforcheckknoxdotcom.checkknoxdotcom.workers.dev/check";
@@ -11,7 +11,7 @@ export async function checkKnoxSendPayload(payload) {
     const token = document.head
       .querySelector('meta[name="jwt-token"]')
       .getAttribute("content");
-    const user = JSON.parse(preloadedData.currentUser);
+    const user = JSON.parse(getPreloadedData().currentUser);
 
     const response = await fetch(CHECK_URL, {
       method: "POST",
