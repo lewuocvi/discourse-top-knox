@@ -1,12 +1,12 @@
 import { apiInitializer } from "discourse/lib/api";
 
-import { generateJwtToken } from "../lib/jwt-token";
+import { setApi } from "../lib/api-ref";
 import { btnClickHandle } from "../lib/serial-reader";
 import { openImageToCheckIMEI } from "../lib/image-imei-scanner";
 import { showStep1 } from "../lib/imei-input-modal";
 
 export default apiInitializer(async (api) => {
-  await generateJwtToken(api);
+  setApi(api);
 
   document.body.addEventListener("click", (e) => {
     const target = e.target.closest(

@@ -1,4 +1,5 @@
 import getPreloadedData from "./preloaded-data";
+import { generateJwtToken } from "./jwt-token";
 import { SwalLoading, showMessage } from "./swal-loading";
 
 const CHECK_URL =
@@ -8,9 +9,7 @@ export async function checkKnoxSendPayload(payload) {
   try {
     SwalLoading.show();
 
-    const token = document.head
-      .querySelector('meta[name="jwt-token"]')
-      .getAttribute("content");
+    const token = await generateJwtToken();
     const user = JSON.parse(getPreloadedData().currentUser);
 
     const response = await fetch(CHECK_URL, {
