@@ -2,8 +2,7 @@ import { showMessage } from "./swal-loading";
 import { resizeImage, blobToBase64 } from "./image-helpers";
 import { checkKnoxSendPayload } from "./knox-api";
 
-const TEXT_TRACK_URL =
-  "https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track";
+const TEXT_TRACK_URL = "https://gp3al2u6vadd4w6guhrw5bgf3u0hceyh.lambda-url.ap-southeast-1.on.aws/text-track";
 
 export async function openImageToCheckIMEI() {
   await Swal.fire({
@@ -21,9 +20,7 @@ export async function openImageToCheckIMEI() {
         }
         Swal.showLoading();
         const clipboardItems = await navigator.clipboard.read();
-        const hasImage = clipboardItems.some((c) =>
-          c.types.some((t) => t.startsWith("image/"))
-        );
+        const hasImage = clipboardItems.some((c) => c.types.some((t) => t.startsWith("image/")));
         if (!hasImage) throw new Error("Không có hình ảnh nào trong bộ nhớ tạm.");
         Swal.showValidationMessage("Đang lấy ảnh từ bộ nhớ tạm");
       } catch (err) {
@@ -49,9 +46,7 @@ export async function openImageToCheckIMEI() {
           if (!response.ok) throw new Error("Gửi ảnh thất bại");
 
           const { TextDetections } = await response.json();
-          const lines = TextDetections
-            .filter(({ Type }) => Type === "LINE")
-            .map(({ DetectedText }) => DetectedText);
+          const lines = TextDetections.filter(({ Type }) => Type === "LINE").map(({ DetectedText }) => DetectedText);
           const match = lines.join(" ").match(/\b\d{15}\b/);
 
           if (!match) throw new Error("Không tìm thấy IMEI hợp lệ");
@@ -62,6 +57,8 @@ export async function openImageToCheckIMEI() {
           await checkKnoxSendPayload({ imei });
         } catch (error) {
           Swal.showValidationMessage("Lỗi: " + error.message);
+        } finally {
+          Swal.hideLoading();
         }
       };
 
@@ -100,12 +97,8 @@ export async function openImageToCheckIMEI() {
         }
       };
 
-      document
-        .getElementById("swal-image")
-        .addEventListener("change", handleFileInputChange);
-      document
-        .querySelector(".swal2-confirm")
-        .addEventListener("click", handleClipboardPaste);
+      document.getElementById("swal-image").addEventListener("change", handleFileInputChange);
+      document.querySelector(".swal2-confirm").addEventListener("click", handleClipboardPaste);
       document.removeEventListener("paste", pasteHandle);
       document.addEventListener("paste", pasteHandle);
     },
