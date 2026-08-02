@@ -45,5 +45,13 @@ export async function btnClickHandle() {
     }
   } catch (err) {
     console.log(err.message);
+  } finally {
+    SwalLoading.close();
+
+    if (reader) reader.releaseLock();
+    if (writer) writer.releaseLock();
+    if (port && port.readable) {
+      await port.close();
+    }
   }
 }
